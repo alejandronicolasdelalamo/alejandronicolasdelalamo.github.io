@@ -26,12 +26,6 @@
   @keyframes blink {
     50% { opacity: 0.25; }
   }
-  /* Acercamiento lento de la foto de la acreditación (se puede pausar) */
-  --animate-retrato: retrato 9s ease-in-out infinite alternate;
-  @keyframes retrato {
-    from { transform: scale(1.02); }
-    to { transform: scale(1.16) translateY(-3%); }
-  }
 }
 
 @theme inline {

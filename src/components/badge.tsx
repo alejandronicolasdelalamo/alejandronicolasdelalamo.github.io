@@ -1,20 +1,115 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
-import { animate, motion, useInView, useMotionValue, useReducedMotion, useTransform } from "motion/react";
+import { useEffect, useRef, type CSSProperties, type PointerEvent } from "react";
+import { animate, motion, useMotionValue, useReducedMotion, useTransform } from "motion/react";
 import { PERFIL } from "@/data/portfolio";
 
-// Muelle con poca amortiguación: la tarjeta oscila varias veces antes de pararse, como un péndulo.
+// Muelle con poca amortiguación: al soltarla, la tarjeta oscila como un péndulo antes de pararse.
 const PENDULO = { type: "spring", stiffness: 55, damping: 3.4, mass: 1 } as const;
 const MAX_GIRO = 65;
 
 const ICONOS = {
   github:
-    "M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3",
+    "M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.300-5.5-5.900 0-1.300.5-2.400 1.200-3.200-.1-.3-.5-1.500.1-3.200 0 0 1-.3 3.300 1.200a11.500 11.500 0 0 1 6 0C17.300 4.700 18.300 5 18.300 5c.6 1.700.2 2.900.1 3.200.8.8 1.200 1.900 1.200 3.200 0 4.600-2.800 5.600-5.500 5.900.4.4.8 1.100.8 2.200v3.300c0 .3.2.7.8.6A12 12 0 0 0 12 .3",
   linkedin:
     "M20.4 20.5h-3.5v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9v5.7H9.4V9h3.4v1.6c.5-.9 1.6-1.9 3.4-1.9 3.6 0 4.3 2.4 4.3 5.5v6.3zM5.3 7.4a2 2 0 1 1 0-4.1 2 2 0 0 1 0 4.1zm1.8 13.1H3.6V9h3.5v11.5zM22.2 0H1.8C.8 0 0 .8 0 1.7v20.6c0 .9.8 1.7 1.8 1.7h20.4c1 0 1.8-.8 1.8-1.7V1.7C24 .8 23.2 0 22.2 0z",
 };
+
+/**
+ * Fondo animado de la tarjeta: una superficie ondulada como seda oscura, dibujada con una trama de puntos.
+ * Cada punto crece y se aclara donde la "tela" recibe luz, y los pliegues avanzan despacio en diagonal.
+ * Se dibuja en un canvas; se detiene fuera de pantalla y queda fijo con "reducir movimiento".
+ */
+function TramaOndulada() {
+  const lienzo = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = lienzo.current;
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return;
+    const quieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const PASO = 6; // separación entre puntos, en px
+    let ancho = 0;
+    let alto = 0;
+    let marco = 0;
+    let visible = true;
+    const inicio = performance.now();
+
+    function medir() {
+      const r = canvas!.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      ancho = r.width;
+      alto = r.height;
+      canvas!.width = Math.round(ancho * dpr);
+      canvas!.height = Math.round(alto * dpr);
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    // Luz de la tela en un punto (0 = pliegue en sombra, 1 = cresta iluminada).
+    function luz(x: number, y: number, t: number) {
+      const X = x / ancho;
+      const Y = y / ancho;
+      const fase = X * 2.1 + Y * 2.9 + 0.55 * Math.sin(X * 2.2 - Y * 1.4 + t * 0.22);
+      const pliegue = Math.sin(fase * 2.3 - t * 0.55);
+      const onda = Math.sin(X * 3.4 - Y * 2.1 + t * 0.33);
+      const bruto = 0.5 + 0.5 * (0.78 * pliegue + 0.22 * onda);
+      const recortado = Math.min(1, Math.max(0, (bruto - 0.46) / 0.48));
+      // Menos trama en el centro (nombre y foto) para que se lea bien, como en el diseño.
+      const d = Math.hypot((x - ancho / 2) / ancho, (y - alto * 0.4) / alto);
+      const centro = Math.min(1, Math.max(0.2, (d - 0.16) / 0.26));
+      return recortado * recortado * centro;
+    }
+
+    function pintar(ahora: number) {
+      const t = quieto ? 0 : (ahora - inicio) / 1000;
+      ctx!.clearRect(0, 0, ancho, alto);
+      for (let y = PASO / 2; y < alto; y += PASO) {
+        for (let x = PASO / 2; x < ancho; x += PASO) {
+          const l = luz(x, y, t);
+          if (l < 0.03) continue;
+          ctx!.globalAlpha = 0.18 + 0.72 * l;
+          ctx!.beginPath();
+          ctx!.arc(x, y, 0.4 + l * PASO * 0.24, 0, Math.PI * 2);
+          ctx!.fill();
+        }
+      }
+    }
+
+    function bucle(ahora: number) {
+      pintar(ahora);
+      if (!quieto && visible) marco = requestAnimationFrame(bucle);
+    }
+
+    medir();
+    ctx.fillStyle = "#cfd2dc";
+    bucle(performance.now());
+
+    const alCambiarTamano = new ResizeObserver(() => {
+      medir();
+      ctx.fillStyle = "#cfd2dc";
+      pintar(performance.now());
+    });
+    alCambiarTamano.observe(canvas);
+
+    // Solo se anima mientras se ve: ahorra batería y CPU.
+    const observador = new IntersectionObserver(([e]) => {
+      const antes = visible;
+      visible = e.isIntersecting;
+      if (visible && !antes && !quieto) marco = requestAnimationFrame(bucle);
+      if (!visible) cancelAnimationFrame(marco);
+    });
+    observador.observe(canvas);
+
+    return () => {
+      cancelAnimationFrame(marco);
+      alCambiarTamano.disconnect();
+      observador.disconnect();
+    };
+  }, []);
+
+  return <canvas ref={lienzo} aria-hidden="true" className="absolute inset-0 size-full" />;
+}
 
 function Red({ href, etiqueta, children }: { href: string; etiqueta: string; children: React.ReactNode }) {
   const externo = href.startsWith("http");
@@ -32,25 +127,15 @@ function Red({ href, etiqueta, children }: { href: string; etiqueta: string; chi
 }
 
 /**
- * Acreditación colgada de una cinta. Cae y se balancea al aparecer en pantalla, y se puede arrastrar:
- * al soltarla vuelve oscilando como un péndulo. Con "reducir movimiento" queda quieta.
+ * Acreditación colgada de una cinta. Cuelga quieta con su fondo animado; se puede arrastrar
+ * y al soltarla vuelve oscilando como un péndulo. Con "reducir movimiento" no se mueve.
  */
 export function Badge() {
   const reduce = useReducedMotion() ?? false;
   const raiz = useRef<HTMLDivElement>(null);
-  const visto = useInView(raiz, { once: true, margin: "0px 0px -25% 0px" });
   const angulo = useMotionValue(0);
   const giroY = useTransform(angulo, [-MAX_GIRO, MAX_GIRO], [20, -20]); // un poco de volumen al balancearse
   const arrastrando = useRef(false);
-  const [pausada, setPausada] = useState(false);
-
-  // Entrada: aparece ladeada y se balancea hasta quedarse quieta.
-  useEffect(() => {
-    if (!visto || reduce) return;
-    angulo.set(26);
-    const control = animate(angulo, 0, PENDULO);
-    return () => control.stop();
-  }, [visto, reduce, angulo]);
 
   function alPulsar(e: PointerEvent<HTMLDivElement>) {
     if (reduce || (e.target as HTMLElement).closest("a, button")) return;
@@ -105,54 +190,28 @@ export function Badge() {
         <span aria-hidden="true" className="relative z-10 -mt-1 block h-5 w-2.5 rounded-b-full bg-gradient-to-b from-[#8a8a92] to-[#4b4b53]" />
 
         {/* Tarjeta */}
-        <div className="relative -mt-6 aspect-[3/4] w-full overflow-hidden rounded-[32px] bg-[#050507] text-white shadow-[0_40px_70px_-25px_rgb(11_12_20/0.75)]">
-          {/* Trama de puntos que se desvanece hacia el centro */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-0"
-            style={{
-              backgroundImage: "radial-gradient(circle, rgb(196 181 253 / 0.8) 0 1.2px, transparent 1.7px)",
-              backgroundSize: "8px 8px",
-              maskImage: "radial-gradient(ellipse 66% 52% at 42% 58%, transparent 30%, #000 78%)",
-              WebkitMaskImage: "radial-gradient(ellipse 66% 52% at 42% 58%, transparent 30%, #000 78%)",
-            }}
-          />
-          {/* Barrido oscuro en diagonal, como en el diseño */}
-          <div aria-hidden="true" className="absolute -left-1/4 top-[44%] h-[34%] w-[150%] -rotate-[16deg] rounded-[50%] bg-[#050507] opacity-90 blur-xl" />
-          <div aria-hidden="true" className="absolute -left-1/4 top-[58%] h-[10%] w-[150%] -rotate-[16deg] rounded-[50%] bg-white/[0.04] blur-md" />
+        <div className="relative -mt-6 aspect-[3/4] w-full overflow-hidden rounded-[32px] bg-[#030304] text-white shadow-[0_40px_70px_-25px_rgb(11_12_20/0.75)]">
+          <TramaOndulada />
 
           {/* Ranura de la pinza */}
-          <span aria-hidden="true" className="absolute left-1/2 top-[5.5%] h-2.5 w-[40%] -translate-x-1/2 rounded-full bg-paper" />
-          <span aria-hidden="true" className="absolute left-1/2 top-[3.2%] size-6 -translate-x-1/2 rounded-full bg-paper" />
+          <span aria-hidden="true" className="absolute left-1/2 top-[5.5%] h-2.5 w-[40%] -translate-x-1/2 rounded-full bg-white" />
+          <span aria-hidden="true" className="absolute left-1/2 top-[3.2%] size-6 -translate-x-1/2 rounded-full bg-white" />
 
           <div className="relative flex h-full flex-col items-center px-[9%] pb-[7%] pt-[17%] text-center">
-            <p className="text-[1.6rem] font-semibold leading-tight tracking-[-0.02em]">{PERFIL.nombre}</p>
-            <p className="mt-1 text-[0.9rem] text-white/60">Desarrollador multiplataforma</p>
+            <p className="text-[1.6rem] font-semibold leading-tight tracking-[-0.02em] [text-shadow:0_2px_12px_rgb(0_0_0/0.9)]">{PERFIL.nombre}</p>
+            <p className="mt-1 text-[0.9rem] text-white/65 [text-shadow:0_2px_10px_rgb(0_0_0/0.9)]">Desarrollador multiplataforma</p>
 
-            {/* Foto con un acercamiento lento que se puede pausar */}
-            <div className="group relative mt-[7%] aspect-square w-[66%] overflow-hidden rounded-[22px] border-[5px] border-[#8b8b90] bg-surface-2">
+            <div className="relative mt-[7%] aspect-square w-[66%] overflow-hidden rounded-[22px] border-[5px] border-[#8b8b90] bg-surface-2">
               {PERFIL.foto && (
                 <Image
                   src={PERFIL.foto}
                   alt={PERFIL.fotoAlt}
                   fill
-                  sizes="200px"
+                  sizes="220px"
                   draggable={false}
-                  className="animate-retrato object-cover object-[50%_25%] grayscale transition-[filter] duration-500 group-hover:grayscale-0"
-                  style={{ animationPlayState: pausada ? "paused" : "running" }}
+                  className="object-cover object-[50%_25%]"
                 />
               )}
-              <button
-                type="button"
-                onClick={() => setPausada((p) => !p)}
-                aria-pressed={pausada}
-                aria-label={pausada ? "Reanudar la animación de la foto" : "Pausar la animación de la foto"}
-                className="absolute bottom-2 right-2 grid size-11 place-items-center rounded-full bg-black/70 text-white opacity-90 backdrop-blur transition-opacity hover:opacity-100"
-              >
-                <svg viewBox="0 0 24 24" className="size-4 fill-current" aria-hidden="true">
-                  {pausada ? <path d="M8 5v14l11-7z" /> : <path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" />}
-                </svg>
-              </button>
             </div>
 
             <div className="mt-auto flex items-center gap-4">
