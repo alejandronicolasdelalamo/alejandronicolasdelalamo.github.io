@@ -1,36 +1,29 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio de Alejandro Nicolás
 
-## Getting Started
+Web personal con mis proyectos, mi trayectoria y mi CV. Hecha con Next.js (exportación estática), React, Tailwind CSS y Motion.
 
-First, run the development server:
+**Web publicada:** https://alejandronicolasdelalamo.github.io
+
+## Cómo se usa
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # desarrollo en http://localhost:3000
+npm run build    # genera la carpeta out/ (HTML estático)
+npm run deploy   # compila y publica out/ en la rama gh-pages
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Dónde se cambia cada cosa
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Qué | Dónde |
+|---|---|
+| Datos, textos, historia, proyectos y trayectoria | `src/data/portfolio.ts` |
+| Colores y fuentes | `src/app/globals.css` y `src/app/layout.tsx` |
+| Capturas de los proyectos | `public/projects/` (WebP) |
+| Foto y CV | `public/yo.webp` y `public/CV_Alejandro_Nicolas_del_Alamo.pdf` |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Para añadir un proyecto, copia uno de la lista `PROYECTOS` en `src/data/portfolio.ts` y cambia sus campos. Las tarjetas, la matriz de tecnologías y la lista de enlaces se actualizan solas.
 
-## Learn More
+## Publicación
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+GitHub Pages sirve la rama `gh-pages`. El script `scripts/deploy.mjs` compila el sitio y sube el contenido de `out/` a esa rama.

@@ -1,26 +1,121 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ==========================================================================
+   Sistema de diseño: los proyectos son cartas sobre una mesa con los colores de DevSpace.
+   Esquinas casi rectas, sombras duras y tipografía muy marcada.
+   ========================================================================== */
+@theme {
+  /* Paleta de DevSpace */
+  --color-canvas: #0b0c14;        /* fondo general */
+  --color-surface: #141724;     /* paneles */
+  --color-surface-2: #1d1a38;   /* superficie con acento */
+  --color-paper: #f1edff;       /* cartas y texto principal */
+  --color-paper-dim: #d6cbfb;   /* etiquetas sobre carta */
+  --color-ink: #0b0c14;         /* texto sobre carta y sobre violeta */
+  --color-accent: #8b5cf6;      /* violeta principal */
+  --color-accent-soft: #c4b5fd; /* lavanda: textos de acento y bloque de contacto */
+  --color-accent-deep: #6d28d9;
+  --color-red: #ef4444;
+  --color-muted: #9aa0b8;
+  --color-shade: #3a2f6e;       /* sombra dura de cartas y botones */
+  --color-line: rgb(232 234 243 / 0.16);
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --radius-card: 6px;
+  --shadow-hard: 6px 6px 0 #3a2f6e;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --animate-marquee: marquee 50s linear infinite;
+  --animate-blink: blink 1.4s steps(2, end) 3; /* 3 parpadeos y se queda fijo (menos de 5 s) */
+  @keyframes marquee {
+    to { transform: translateX(-50%); }
+  }
+  @keyframes blink {
+    50% { opacity: 0.25; }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@theme inline {
+  --font-display: var(--font-syne), "Arial Black", sans-serif;
+  --font-sans: var(--font-instrument), system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-padding-top: 84px;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: rgb(139 92 246 / 0.25);
+  }
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+  a, button {
+    touch-action: manipulation;
+  }
+  body {
+    background: var(--color-canvas);
+    color: var(--color-paper);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    overflow-x: clip; /* `clip` (no `hidden`) para no romper position: sticky */
+  }
+  /* Mesa: resplandor violeta arriba (el de DevSpace), sombra abajo y un ruido muy fino */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.9;
+    background:
+      radial-gradient(ellipse 75% 48% at 25% 0%, rgb(109 40 217 / 0.28), transparent 70%),
+      radial-gradient(ellipse 60% 40% at 90% 100%, rgb(139 92 246 / 0.12), transparent 70%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-accent-soft);
+    outline-offset: 3px;
+  }
+  button {
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.25rem;
+    border: 2px solid var(--color-ink);
+    border-radius: var(--radius-card);
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    box-shadow: 4px 4px 0 var(--color-shade);
+    transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.15s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s;
+  }
+  .btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--color-shade);
+  }
+  .btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 var(--color-shade);
+  }
+  .btn-accent { background: var(--color-accent); color: var(--color-ink); }
+  .btn-line { background: transparent; color: var(--color-paper); border-color: var(--color-paper); }
+  .btn-line:hover { background: rgb(245 239 224 / 0.1); }
+  .btn-ink { background: var(--color-ink); color: var(--color-paper); box-shadow: 4px 4px 0 rgb(22 24 27 / 0.35); }
+  .btn-paper { background: var(--color-paper); color: var(--color-ink); box-shadow: 4px 4px 0 rgb(22 24 27 / 0.35); }
+  .btn-sm { min-height: 2.75rem; padding: 0.45rem 0.9rem; font-size: 0.9rem; box-shadow: 3px 3px 0 rgb(22 24 27 / 0.3); }
+}
+
+/* Movimiento reducido: todo queda quieto y visible */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
