@@ -89,9 +89,21 @@ export function Hero() {
   }
 
   return (
-    <section ref={ref} onPointerMove={alMover} onPointerLeave={alSalir} className="pb-[clamp(56px,8vw,96px)] pt-[clamp(40px,7vw,88px)]">
-      <div className="mx-auto grid max-w-[1180px] items-center gap-12 px-4 sm:px-8 xl:grid-cols-[minmax(0,1fr)_600px]">
+    <section
+      ref={ref}
+      onPointerMove={alMover}
+      onPointerLeave={alSalir}
+      className="flex min-h-[calc(100svh-4rem)] items-center py-[clamp(40px,6vw,72px)]"
+    >
+      <div className="mx-auto grid w-full max-w-[1180px] items-center gap-12 px-4 sm:px-8 xl:grid-cols-[minmax(0,1fr)_620px]">
         <motion.div style={{ y: textoY }}>
+          <p className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-line bg-surface/70 px-3.5 py-1.5 text-[0.9rem] font-semibold text-paper">
+            <span className="relative flex size-2.5" aria-hidden="true">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-[#22c55e] opacity-60 motion-reduce:hidden" />
+              <span className="relative inline-flex size-2.5 rounded-full bg-[#22c55e]" />
+            </span>
+            Busco prácticas en Madrid o en remoto
+          </p>
           <h1 className="font-display text-[clamp(2.2rem,11vw,5.4rem)] font-extrabold leading-[0.9] tracking-[-0.04em] xl:text-[clamp(3.2rem,4.4vw,5rem)]">
             {["Alejandro", "Nicolás"].map((palabra, i) => (
               <motion.span
@@ -105,30 +117,28 @@ export function Hero() {
               </motion.span>
             ))}
           </h1>
-          <p className="mt-6 text-[1.25rem] font-semibold leading-snug text-accent-soft">Desarrollador multiplataforma en formación</p>
-          <p className="mt-4 max-w-[44ch] text-[1.2rem] text-[#dfe9e2]">
-            Hago apps Android con Kotlin, backends con Java y Spring Boot y webs con React. Estos son mis proyectos: pulsa uno para verlo de cerca.
+          <p className="mt-6 text-[1.25rem] font-semibold leading-snug text-accent-soft">{PERFIL.rol}</p>
+          <p className="mt-4 max-w-[46ch] text-[1.15rem] leading-relaxed text-[#d8d4ea]">
+            Hago apps Android con Kotlin, backends con Java y Spring Boot y webs con React y TypeScript. Estudio segundo de DAM en Ilerna.
           </p>
-          <div className="mt-7 flex flex-wrap gap-3.5">
+          <div className="mt-8 flex flex-wrap gap-3">
             <a className="btn btn-accent" href="#proyectos">Ver proyectos</a>
             <a className="btn btn-line" href={PERFIL.cv} download>Descargar CV</a>
           </div>
-          <ul className="mt-9 grid gap-2 text-[0.95rem] text-muted">
-            {["Madrid, España", "Segundo curso de DAM", "Busco mis primeras prácticas"].map((t) => (
-              <li key={t} className="flex items-center gap-2.5 before:size-2 before:bg-accent before:content-['']">{t}</li>
-            ))}
-          </ul>
         </motion.div>
 
-        <div
-          className="relative mx-auto h-[calc(var(--cw)*1.4+70px)] w-full max-w-[600px] [perspective:1400px]"
-          style={{ "--cw": "clamp(92px, 25vw, 168px)" } as CSSProperties}
-          role="group"
-          aria-label="Proyectos destacados"
-        >
-          {MANO.map((p, i) => (
-            <CartaMano key={p.id} project={p} index={i} spread={spread} cursorX={cursorX} cursorY={cursorY} reduce={reduce} />
-          ))}
+        <div>
+          <div
+            className="relative mx-auto h-[calc(var(--cw)*1.4+70px)] w-full max-w-[620px] [perspective:1400px]"
+            style={{ "--cw": "clamp(96px, 25vw, 184px)" } as CSSProperties}
+            role="group"
+            aria-label="Proyectos destacados"
+          >
+            {MANO.map((p, i) => (
+              <CartaMano key={p.id} project={p} index={i} spread={spread} cursorX={cursorX} cursorY={cursorY} reduce={reduce} />
+            ))}
+          </div>
+          <p className="mt-4 text-center text-[0.9rem] text-muted">Pulsa un proyecto para verlo de cerca</p>
         </div>
       </div>
     </section>
