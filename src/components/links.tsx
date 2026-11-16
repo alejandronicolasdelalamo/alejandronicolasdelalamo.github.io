@@ -73,14 +73,20 @@ function Grupo({ titulo, children }: { titulo: string; children: React.ReactNode
 
 const SIN_URL: Record<Visibilidad, string> = {
   publico: "",
-  privado: "Código en un repositorio privado",
+  privado: "Código privado",
   local: "Código aún no publicado",
 };
 
 export function Links() {
   return (
     <div className="grid gap-12">
-      <Grupo titulo="Proyectos">
+      <Grupo titulo="Apps en línea">
+        {PROYECTOS.filter((p) => p.demo).map((p) => (
+          <Fila key={p.id} nombre={p.titulo} detalle={PALOS[p.palo].nombre} url={p.demo!} />
+        ))}
+      </Grupo>
+
+      <Grupo titulo="Código de los proyectos">
         {PROYECTOS.map((p) => (
           <Fila
             key={p.id}

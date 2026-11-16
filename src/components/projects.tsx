@@ -197,14 +197,25 @@ function TarjetaProyecto({ project, index, progress, actualizado, onAbrir }: Tar
                 <li className="rounded-md bg-ink/[0.07] px-2.5 py-1 text-[0.78rem] font-medium text-ink/75">+{project.tecnologias.length - 6}</li>
               )}
             </ul>
+            {/* Acción principal: abrir la app si está en línea; si no, ver el código */}
             <div className="mt-auto flex flex-wrap items-center gap-3 pt-1">
+              {project.demo && (
+                <a className="btn btn-accent btn-sm" href={project.demo} target="_blank" rel="noopener noreferrer">
+                  Abrir la app
+                </a>
+              )}
               {project.visibilidad === "publico" && project.repo ? (
-                <a className="btn btn-accent btn-sm" href={`${PERFIL.github}/${project.repo}`} target="_blank" rel="noopener noreferrer">
-                  Ver código en GitHub
+                <a
+                  className={`btn btn-sm ${project.demo ? "btn-paper" : "btn-accent"}`}
+                  href={`${PERFIL.github}/${project.repo}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Ver código
                 </a>
               ) : (
                 <span className="rounded-md border border-ink/15 px-3 py-2 text-[0.85rem] font-semibold text-ink/65">
-                  {project.visibilidad === "privado" ? "Código en un repositorio privado" : "Código aún no publicado"}
+                  {project.visibilidad === "privado" ? "Código privado" : "Código aún no publicado"}
                 </span>
               )}
               {actualizado && <span className="text-[0.82rem] text-ink/60">Actualizado {actualizado}</span>}

@@ -19,6 +19,7 @@ export interface Proyecto {
   tecnologias: string[];
   visibilidad: Visibilidad;
   repo: string | null; // nombre del repositorio en GitHub
+  demo?: string; // dirección donde se puede usar la app en línea
   imagen: { src: string; ancho: number; alto: number; ajuste: "cover" | "contain"; posicion: "arriba" | "centro" } | null;
   fondo: string; // color de fondo del hueco de la imagen
   destacado: boolean; // sale en el abanico de la portada
@@ -87,6 +88,7 @@ export const PROYECTOS: Proyecto[] = [
     tecnologias: ["React", "TypeScript", "Tailwind", "Flask", "Python", "PostgreSQL", "React Native", "Docker", "GitHub Actions", "Playwright", "Git y GitHub"],
     visibilidad: "publico",
     repo: "onmi",
+    demo: "https://onmi-z9vl.onrender.com/",
     imagen: { src: "/projects/onmi-dark.webp", ancho: 1100, alto: 688, ajuste: "cover", posicion: "arriba" },
     fondo: "#1b2433",
     destacado: true,
@@ -115,7 +117,7 @@ export const PROYECTOS: Proyecto[] = [
     titulo: "SopaVentura",
     corto: "SopaVentura",
     palo: "juegos",
-    estado: "Uso privado",
+    estado: "Publicado",
     resumen: "Sopa de letras en pixel art con mapa de islas, cinco modos de juego y partidas para dos jugadores en directo.",
     logros: [
       "Se instala como app y funciona sin conexión, con sincronización en Supabase",
@@ -125,6 +127,7 @@ export const PROYECTOS: Proyecto[] = [
     tecnologias: ["TypeScript", "PWA", "Supabase", "PostgreSQL", "Vitest", "Python", "Git y GitHub"],
     visibilidad: "privado",
     repo: "sopaventura",
+    demo: "https://sopaventura.alejandronicolasdelalamo.workers.dev/",
     imagen: { src: "/projects/sopaventura.webp", ancho: 1000, alto: 880, ajuste: "cover", posicion: "centro" },
     fondo: "#1d1a38",
     destacado: true,
