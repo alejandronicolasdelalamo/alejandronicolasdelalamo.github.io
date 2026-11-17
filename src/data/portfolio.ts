@@ -167,7 +167,7 @@ export const PROYECTOS: Proyecto[] = [
     tecnologias: ["JavaScript", "Three.js", "WebGL", "HTML y CSS", "Git y GitHub"],
     visibilidad: "publico",
     repo: "21-de-septiembre",
-    demo: "https://alejandronicolasdelalamo.github.io/21-de-septiembre/",
+    demo: "https://alejandronicolasdelalamo.github.io/21-de-septiembre/demo/",
     imagen: { src: "/projects/girasol-galaxia.webp", ancho: 1000, alto: 880, ajuste: "cover", posicion: "centro" },
     fondo: "#120b3a",
     destacado: false,
