@@ -19,6 +19,7 @@ export interface Proyecto {
   tecnologias: string[];
   visibilidad: Visibilidad;
   repo: string | null; // nombre del repositorio en GitHub
+  rutaCodigo?: string; // carpeta del repositorio que abre "Ver código" (por defecto, la raíz)
   demo?: string; // dirección donde se puede usar la app en línea
   imagen: { src: string; ancho: number; alto: number; ajuste: "cover" | "contain"; posicion: "arriba" | "centro" } | null;
   fondo: string; // color de fondo del hueco de la imagen
@@ -27,6 +28,12 @@ export interface Proyecto {
 }
 
 const USUARIO = "alejandronicolasdelalamo";
+
+/** Dirección del código en GitHub, o null si no es público. */
+export function urlCodigo(p: Proyecto): string | null {
+  if (p.visibilidad !== "publico" || !p.repo) return null;
+  return `https://github.com/${USUARIO}/${p.repo}${p.rutaCodigo ? `/${p.rutaCodigo}` : ""}`;
+}
 
 export const SITIO = {
   url: "https://alejandronicolasdelalamo.github.io",
@@ -167,6 +174,7 @@ export const PROYECTOS: Proyecto[] = [
     tecnologias: ["JavaScript", "Three.js", "WebGL", "HTML y CSS", "Git y GitHub"],
     visibilidad: "publico",
     repo: "21-de-septiembre",
+    rutaCodigo: "tree/main/demo",
     demo: "https://alejandronicolasdelalamo.github.io/21-de-septiembre/demo/",
     imagen: { src: "/projects/girasol-galaxia.webp", ancho: 1000, alto: 880, ajuste: "cover", posicion: "centro" },
     fondo: "#120b3a",

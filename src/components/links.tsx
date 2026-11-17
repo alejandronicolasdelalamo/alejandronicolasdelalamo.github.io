@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { PALOS, PERFIL, PROYECTOS, type Visibilidad } from "@/data/portfolio";
+import { PALOS, PERFIL, PROYECTOS, urlCodigo, type Visibilidad } from "@/data/portfolio";
 
 const quitarProtocolo = (url: string) => url.replace(/^https?:\/\//, "");
 
@@ -92,7 +92,7 @@ export function Links() {
             key={p.id}
             nombre={p.titulo}
             detalle={PALOS[p.palo].nombre}
-            url={p.visibilidad === "publico" && p.repo ? `${PERFIL.github}/${p.repo}` : null}
+            url={urlCodigo(p)}
             nota={SIN_URL[p.visibilidad]}
           />
         ))}

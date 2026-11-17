@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import Image from "next/image";
 import { motion, useMotionValue, useMotionValueEvent, useReducedMotion, useScroll, useSpring, useTransform, type MotionValue } from "motion/react";
-import { PALOS, PERFIL, PROYECTOS, type Estado, type Proyecto } from "@/data/portfolio";
+import { PALOS, PROYECTOS, urlCodigo, type Estado, type Proyecto } from "@/data/portfolio";
 import { hace } from "@/lib/github";
 import { useRepos } from "@/hooks/use-repos";
 import { SinImagen, claseImagen } from "./preview-card";
@@ -207,7 +207,7 @@ function TarjetaProyecto({ project, index, progress, actualizado, onAbrir }: Tar
               {project.visibilidad === "publico" && project.repo ? (
                 <a
                   className={`btn btn-sm ${project.demo ? "btn-paper" : "btn-accent"}`}
-                  href={`${PERFIL.github}/${project.repo}`}
+                  href={urlCodigo(project)!}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
