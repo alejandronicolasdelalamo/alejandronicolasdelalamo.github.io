@@ -161,11 +161,11 @@ export const PROYECTOS: Proyecto[] = [
   },
   {
     id: "universo",
-    titulo: "Mi Universo Entero",
-    corto: "Universo",
+    titulo: "Flores amarillas 21 de septiembre",
+    corto: "Flores amarillas",
     palo: "web",
     estado: "Publicado",
-    resumen: "Escena 3D interactiva para el 21 de septiembre: más de 20 000 estrellas que se juntan hasta formar un girasol del tamaño de una galaxia.",
+    resumen: "Universo 3D con fotos para regalar el 21 de septiembre: más de 20 000 estrellas forman un girasol gigante y los recuerdos flotan a su alrededor en polaroids.",
     logros: [
       "Sombreadores GLSL propios: la animación de entrada y el centelleo se calculan en la GPU",
       "Cámara orbital hecha a mano con ratón, táctil, rueda y teclado, sin OrbitControls",
@@ -182,11 +182,11 @@ export const PROYECTOS: Proyecto[] = [
   },
   {
     id: "san-valentin",
-    titulo: "Para Ti, Mi Amor",
-    corto: "San Valentín",
+    titulo: "Carta de amor",
+    corto: "Carta de amor",
     palo: "web",
     estado: "Publicado",
-    resumen: "Carta animada de San Valentín: tocas un corazón, cae como una semilla y de él crece un árbol entero de corazones.",
+    resumen: "Carta de San Valentín animada: un corazón cae como una semilla, crece un árbol de corazones y aparece un contador en vivo de los días de relación.",
     logros: [
       "Árbol procedural dibujado en Canvas 2D a partir de un generador aleatorio con semilla",
       "Cientos de hojas con viento, caída y rebrote, y ráfagas al mover el ratón",
