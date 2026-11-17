@@ -1,0 +1,4 @@
+User-Agent: *
+Allow: /
+
+Sitemap: https://alejandronicolasdelalamo.github.io/sitemap.xml
